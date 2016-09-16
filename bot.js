@@ -60,6 +60,7 @@ function sendTweet(status_id) {
 function getTweetText() {
     let text = [
         'Gelieve de valse mail door te sturen naar meld@spamdatabase.nl!',
+        'Gelieve de valse mail door te sturen naar meld@spamdatabase.nl. Bedankt!',
         'Valse mail ontvangen? Stuur deze door naar meld@spamdatabase.nl!',
         'Spam mail ontvangen? Forward deze naar meld@spamdatabase.nl! Dank!'
         ];
