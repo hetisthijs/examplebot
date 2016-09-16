@@ -1,41 +1,70 @@
-// Our Twitter library
 var Twit = require('twit');
-
-// We need to include our configuration file
 var T = new Twit(require('./config.js'));
 
-// This is the URL of a search for the latest tweets on the '#mediaarts' hashtag.
-var mediaArtsSearch = {q: "#mediaarts", count: 10, result_type: "recent"}; 
+function startSearch() {
+    T.get('statuses/user_timeline', {count: 100, screen_name: 'spamdatabase'}, function(error, data) {
+        let since_id = 0;
+        data.forEach(function (status) {
+            if(status.id > since_id)
+                since_id = status.id;
+        });
 
-// This function finds the latest tweet with the #mediaarts hashtag, and retweets it.
-function retweetLatest() {
-	T.get('search/tweets', mediaArtsSearch, function (error, data) {
-	  // log out any errors and responses
-	  console.log(error, data);
-	  // If our search request to the server had no errors...
-	  if (!error) {
-	  	// ...then we grab the ID of the tweet we want to retweet...
-		var retweetId = data.statuses[0].id_str;
-		// ...and then we tell Twitter we want to retweet it!
-		T.post('statuses/retweet/' + retweetId, { }, function (error, response) {
-			if (response) {
-				console.log('Success! Check your bot, it should have retweeted something.')
-			}
-			// If there was an error with our Twitter call, we print it out here.
-			if (error) {
-				console.log('There was an error with Twitter:', error);
-			}
-		})
-	  }
-	  // However, if our original search request had an error, we want to print it out here.
-	  else {
-	  	console.log('There was an error with your hashtag search:', error);
-	  }
-	});
+        executeSearch('valse email', since_id);
+        executeSearch('phishing email', since_id, 'nl');
+        executeSearch('neppe email', since_id);
+        executeSearch('nepmail', since_id);
+    });
 }
 
-// Try to retweet something as soon as we run the program...
-retweetLatest();
-// ...and then every hour after that. Time here is in milliseconds, so
-// 1000 ms = 1 second, 1 sec * 60 = 1 min, 1 min * 60 = 1 hour --> 1000 * 60 * 60
-setInterval(retweetLatest, 1000 * 60 * 60);
+function executeSearch(q, since_id, locale) {
+    let parameters = {q: q, count: 100, result_type: "recent", since_id: since_id};
+    if (locale) {
+        parameters['locale'] = locale;
+    }
+    T.get('search/tweets', parameters, function (error, data) {
+        if (data) {
+            data.statuses.forEach(function (status) { //for all statuses
+                if (status.in_reply_to_status_id_str) { //probably answer from helpdesk, respond to original tweet!
+                    sendTweet(status.in_reply_to_status_id_str);
+                } else {
+                    sendTweet(status.id_str);
+                }
+            });
+        } else {
+            console.log('There was an error with the search:', error);
+        }
+    });
+}
+
+function sendTweet(status_id) {
+    T.get('statuses/show/'+status_id, {}, function (error, data) {
+        if (data) {
+            let user = data.user.screen_name;
+            T.post('statuses/update', {
+                status: '@' + user + ' ' + getTweetText(),
+                in_reply_to_status_id: status_id
+            }, function (error, response) {
+                if (response) {
+                    console.log('Tweeted to '+user);
+                }
+                if (error) {
+                    console.log('There was an error with Twitter:', error);
+                }
+            })
+        } else {
+            console.log('There was an error with status lookup:', error);
+        }
+    });
+}
+
+function getTweetText() {
+    let text = [
+        'Gelieve de valse mail door te sturen naar meld@spamdatabase.nl!',
+        'Valse mail ontvangen? Stuur deze door naar meld@spamdatabase.nl!',
+        'Spam mail ontvangen? Forward deze naar meld@spamdatabase.nl! Dank!'
+        ];
+    return text[Math.floor(Math.random() * text.length)];
+}
+
+startSearch();
+setInterval(startSearch, 1000 * 60 * 60); //every hour repeat
