@@ -11,9 +11,11 @@ function startSearch() {
         });
 
         executeSearch('valse email', since_id);
-        executeSearch('phishing email', since_id, 'nl');
+        executeSearch('valse mail', since_id);
+        //executeSearch('phishing email', since_id, 'nl');
         executeSearch('neppe email', since_id);
         executeSearch('nepmail', since_id);
+        executeSearch('neppe mail', since_id);
     });
 }
 
