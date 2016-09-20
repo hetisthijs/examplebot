@@ -64,8 +64,8 @@ function getTweetText() {
     let text = [
         'Gelieve de (Nederlandse) valse mail door te sturen naar meld@spamdatabase.nl!',
         'Gelieve de (Nederlandse) valse mail door te sturen naar meld@spamdatabase.nl. Bedankt!',
-        'Valse mail ontvangen in het Nederlands? Stuur deze door naar meld@spamdatabase.nl!',
-        'Spam mail ontvangen? Forward deze naar meld@spamdatabase.nl als het Nederlandstalig is! Dank!'
+        'Heeft u een valse (Nederlandstalige) mail ontvangen? Stuur deze door naar meld@spamdatabase.nl!',
+        'Spam mail ontvangen? Forward deze naar meld@spamdatabase.nl wanneer Nederlandstalig! Dank!'
         ];
     return text[Math.floor(Math.random() * text.length)];
 }
