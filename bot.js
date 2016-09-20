@@ -41,7 +41,7 @@ function executeSearch(q, since_id, locale) {
 
 function sendTweet(status_id) {
     T.get('statuses/show/'+status_id, {}, function (error, data) {
-        if (data && data['user']['screen_name']) {
+        if (data && data['user']) {
             let user = data.user.screen_name;
             T.post('statuses/update', {
                 status: '@' + user + ' ' + getTweetText(),
