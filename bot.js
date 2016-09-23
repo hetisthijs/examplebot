@@ -43,17 +43,19 @@ function sendTweet(status_id) {
     T.get('statuses/show/'+status_id, {}, function (error, data) {
         if (data && data['user']) {
             let user = data.user.screen_name;
-            T.post('statuses/update', {
-                status: '@' + user + ' ' + getTweetText(),
-                in_reply_to_status_id: status_id
-            }, function (error, response) {
-                if (response) {
-                    console.log('Tweeted to '+user);
-                }
-                if (error) {
-                    console.log('There was an error with Twitter:', error);
-                }
-            })
+            if (user != 'SpamDatabase') { //not to self, lol
+                T.post('statuses/update', {
+                    status: '@' + user + ' ' + getTweetText(),
+                    in_reply_to_status_id: status_id
+                }, function (error, response) {
+                    if (response) {
+                        console.log('Tweeted to ' + user);
+                    }
+                    if (error) {
+                        console.log('There was an error with Twitter:', error);
+                    }
+                })
+            }
         } else {
             console.log('There was an error with status lookup:', error);
         }
